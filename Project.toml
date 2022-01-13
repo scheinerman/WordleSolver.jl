@@ -1,0 +1,4 @@
+name = "WordleSolver"
+uuid = "0bca4cfe-18e4-4863-8c53-7a8cb1959a45"
+authors = ["Ed Scheinerman <ers@jhu.edu>"]
+version = "0.1.0"
