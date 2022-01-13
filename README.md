@@ -1,2 +1,3 @@
-# WorldeSolver.jl
+# `WordleSolver`
+
 Solve Wordle puzzles interactively.
