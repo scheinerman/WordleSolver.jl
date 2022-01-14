@@ -1,7 +1,9 @@
 module WordleSolver
 using Random
 
-export load_words, wordle_score
+export load_words, wordle_solver
+
+export wordle_score, read_tuple, wordle_validate
 
 const five = 5
 
@@ -81,5 +83,72 @@ function read_tuple()::NTuple{five,Int}
     result = eval(parsed)
     return result
 end
+
+"""
+    wordle_validate(guess, history)
+See if the word `guess` is consistent with the results we previously seen.
+"""
+function wordle_validate(guess::String, history::Dict{String,NTuple{five,Int}})::Bool
+    if length(history) == 0
+        return true
+    end
+
+    for code in keys(history)
+        if wordle_score(code, guess) != history[code]
+            return false
+        end
+    end
+
+    return true
+end
+
+
+function wordle_solver(words::Vector{String})
+    hist = Dict{String,NTuple{five,Int}}()
+
+    bad_message = "\nYour entry is invalid. Please try again."
+
+    for g in words
+        if wordle_validate(g, hist)
+            result = ""
+            while true
+                println("\nI guess the word is $g")
+                print("Enter the result --> ")
+                try
+                    result = read_tuple()
+                    for x in result 
+                        if x>2 || x<0
+                            println(bad_message)
+                            continue 
+                        end
+                    end
+                    break
+                catch
+                    println(bad_message)
+                end
+            end
+            if result == Tuple(2 for _ in 1:five)
+                steps = length(hist) + 1
+                println("\nSuccess in $steps guesses!!")
+                return 
+            end 
+            hist[g] = result
+        end
+    end
+    println("\nI give up. Dumping history.")
+    hist_dump(hist)
+    return 
+end
+
+wordle_solver() = wordle_solver(load_words())
+
+
+function hist_dump(hist::Dict{String, NTuple{five,Int}})
+    for word in sort(collect(keys(hist)))
+        reply = hist[word]
+        println("$word --> $reply")
+    end
+end
+
 
 end # module
