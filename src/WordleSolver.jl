@@ -41,14 +41,14 @@ Given two five letter words, return a five-tuple with the following meanings:
 """
 function wordle_score(guess::String, code::String)::NTuple{five,Int}
     result = [0 for _ = 1:five]
-    used = [false for _ = 1:five ]
+    used = [false for _ = 1:five]
 
 
     # find letters that match in position
     for i = 1:five
         if guess[i] == code[i]
             result[i] = 2
-            used[i]= true
+            used[i] = true
         end
     end
 
@@ -69,5 +69,17 @@ function wordle_score(guess::String, code::String)::NTuple{five,Int}
     return Tuple(result)
 end
 
+"""
+    read_tuple
+Read in characters from the keyboard and parse them into a 5-tuple of integers.
+If the input isn't parsed as a 5-tuple of `Int`s, then throw an error.
+Returns the 5-tuple.
+"""
+function read_tuple()::NTuple{five,Int}
+    str = readline()
+    parsed = Base.Meta.parse(str)
+    result = eval(parsed)
+    return result
+end
 
 end # module
