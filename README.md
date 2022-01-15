@@ -47,7 +47,9 @@ Success in 4 guesses!!
 
 ### Repeated letters
 
-If the code word or the guess has repeated letters. When scoring a guess, we first check for letters that are correct and in the correct position; they get scored `2`. 
+Here is how we deal with the situation when the code word or the guess has repeated letters. 
+
+When scoring a guess, we first check for letters that are correct and in the correct position; they get scored `2`. 
 
 If there is a letter in the word that is in the correct position, it now gets a `1`, but what should we do if that letter appears twice in the word. For example, suppose the word we are trying to find is `ANKLE` and we guess `KARMA`. There are two `A`s in `KARMA`, neither in the correct position. In this case, we assign a `1` to the first `A` and a `0` to the second.
 ```julia
