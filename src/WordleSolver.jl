@@ -244,7 +244,7 @@ function wordle_play()
     ww = load_words()
     nw = length(ww)
     idx = mod1(rand(Int), nw)
-    code = first(ww)
+    code = ww[idx]
     wordle_play(code)
 end
 
