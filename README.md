@@ -45,6 +45,47 @@ Enter the result --> 2,2,2,2,2
 Success in 4 guesses!!
 ```
 
+### When the computer fails
+
+If the computer is unable to find the secret word, it gives up and returns a dictionary containing all the guesses it made and the scores given by the user.
+
+It is possible the user incorrectly scored a guess. To check that, use `hist_check(d,code)` where `d` is the dictionary returned by `wordle_solver` and `code` is the secret word the computer was supposed to guess.
+
+Here is an example in which some scoring was done incorrectly:
+```julia
+julia> d = wordle_solver()
+
+I guess the word is GRAFF
+Enter the result --> 0,1,1,0,0
+
+I guess the word is AURAE
+Enter the result --> 1,0,2,0,0
+
+I guess the word is CHRIA
+Enter the result --> 0,0,2,0,2
+
+I guess the word is TORTA
+Enter the result --> 0,0,2,0,2
+
+I guess the word is SYRMA
+Enter the result --> 0,0,2,0,2
+
+I give up. 
+Dict{String, NTuple{5, Int64}} with 5 entries:
+  "GRAFF" => (0, 1, 1, 0, 0)
+  "CHRIA" => (0, 0, 2, 0, 2)
+  "AURAE" => (1, 0, 2, 0, 0)
+  "SYRMA" => (0, 0, 2, 0, 2)
+  "TORTA" => (0, 0, 2, 0, 2)
+
+julia> hist_check(d, "KARMA")
+For my guess AURAE you said (1, 0, 2, 0, 0) but it should have been (1, 0, 2, 1, 0)
+For my guess SYRMA you said (0, 0, 2, 0, 2) but it should have been (0, 0, 2, 2, 2)
+```
+
+
+
+
 ### Repeated letters
 
 Here is how we deal with the situation when the code word or the guess has repeated letters. 

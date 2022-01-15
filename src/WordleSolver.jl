@@ -1,7 +1,7 @@
 module WordleSolver
 using Random
 
-export load_words, wordle_solver, wordle_play
+export hist_check, wordle_solver, wordle_play
 
 # export wordle_score, read_tuple, wordle_validate, read_word, hist_report
 
@@ -142,21 +142,24 @@ function wordle_solver(words::Vector{String})
             hist[g] = result
         end
     end
-    println("\nI give up. Dumping history.")
+    println("\nI give up.")
     return hist
 end
 
 wordle_solver() = wordle_solver(load_words())
 
 """
-    hist_dump
-Print out a wordle history dictionary. Used for debugging or catching liars.
+    hist_check(d,code)
+Check the user inputs saved in the dictionary `d` with the code word `code`.   
 """
-function hist_report(hist::Dict{String,NTuple{five,Int}}, code::String)
+function hist_check(hist::Dict{String,NTuple{five,Int}}, code::String)
+    code = uppercase(code)
     for word in sort(collect(keys(hist)))
         reply = hist[word]
         result = wordle_score(word, code)
-        println("$word --> $reply --> $result")
+        if reply != result
+            println("For my guess $word you said $reply but it should have been $result")
+        end
     end
 end
 
@@ -174,7 +177,7 @@ function read_word()::Tuple{String,Bool}
     w = uppercase(w)
 
     if w == "?"
-        return w,true     # special case to escape
+        return w, true     # special case to escape
     end
 
     if length(w) != five
@@ -210,8 +213,8 @@ function wordle_play(code::String)
 
         if w == "?"
             println("The code word is $code")
-            return 
-        end 
+            return
+        end
 
         result = wordle_score(w, code)
         present_score(w, result)
