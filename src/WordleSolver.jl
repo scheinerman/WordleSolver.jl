@@ -1,9 +1,9 @@
 module WordleSolver
 using Random
 
-export load_words, wordle_solver
+export load_words, wordle_solver, wordle_play
 
-export wordle_score, read_tuple, wordle_validate
+# export wordle_score, read_tuple, wordle_validate, read_word, hist_report
 
 const five = 5
 
@@ -102,7 +102,14 @@ function wordle_validate(guess::String, history::Dict{String,NTuple{five,Int}}):
     return true
 end
 
-
+"""
+    wordle_solver
+The computer guesses five-letter words and the human scores them. 
+Scores are entered as a list of five comma-separated numbers with 
+* 0 letter is not in the word
+* 1 letter is in the word but in the wrong position
+* 2 letter is in the word and in the right position
+"""
 function wordle_solver(words::Vector{String})
     hist = Dict{String,NTuple{five,Int}}()
 
@@ -116,10 +123,10 @@ function wordle_solver(words::Vector{String})
                 print("Enter the result --> ")
                 try
                     result = read_tuple()
-                    for x in result 
-                        if x>2 || x<0
+                    for x in result
+                        if x > 2 || x < 0
                             println(bad_message)
-                            continue 
+                            continue
                         end
                     end
                     break
@@ -127,28 +134,114 @@ function wordle_solver(words::Vector{String})
                     println(bad_message)
                 end
             end
-            if result == Tuple(2 for _ in 1:five)
+            if result == Tuple(2 for _ = 1:five)
                 steps = length(hist) + 1
                 println("\nSuccess in $steps guesses!!")
-                return 
-            end 
+                return
+            end
             hist[g] = result
         end
     end
     println("\nI give up. Dumping history.")
-    hist_dump(hist)
-    return 
+    return hist
 end
 
 wordle_solver() = wordle_solver(load_words())
 
-
-function hist_dump(hist::Dict{String, NTuple{five,Int}})
+"""
+    hist_dump
+Print out a wordle history dictionary. Used for debugging or catching liars.
+"""
+function hist_report(hist::Dict{String,NTuple{five,Int}}, code::String)
     for word in sort(collect(keys(hist)))
         reply = hist[word]
-        println("$word --> $reply")
+        result = wordle_score(word, code)
+        println("$word --> $reply --> $result")
     end
 end
 
+
+"""
+    read_word
+Read a word from the keyboard. Return the pair `(w,valid)`
+where `w` is the uppercase version of the input and `valid`
+is `true` if `w` is a five-letter string of characters from 
+`A` to `Z`. We don't check if `w` is in a dictionary.
+"""
+function read_word()::Tuple{String,Bool}
+    w = readline()
+    valid = true
+    w = uppercase(w)
+
+    if w == "?"
+        return w,true     # special case to escape
+    end
+
+    if length(w) != five
+        valid = false
+    end
+    for c in w
+        if c < 'A' || c > 'Z'
+            valid = false
+        end
+    end
+    return w, valid
+end
+
+
+"""
+    wordle_play
+The human tries to guess the secret word.
+"""
+function wordle_play(code::String)
+    code = uppercase(code)
+    count = 0
+    while true
+        count += 1
+        w = "ABCDE"
+        while true
+            print("\nEnter your guess: ")
+            w, valid = read_word()
+            if valid
+                break
+            end
+            println("Your input $w is not a valid $five-letter word. Please try again.")
+        end
+
+        if w == "?"
+            println("The code word is $code")
+            return 
+        end 
+
+        result = wordle_score(w, code)
+        present_score(w, result)
+        println("Score = $result")
+        if w == code
+            break
+        end
+    end
+    println("\nSolved in $count steps")
+    return
+end
+
+function wordle_play()
+    ww = load_words()
+    code = first(ww)
+    wordle_play(code)
+end
+
+
+function present_score(word::String, score::NTuple{five,Int})
+    for c in word
+        print("$c ")
+    end
+    println()
+
+    symbols = "-+*"
+    for t in score
+        print(symbols[t+1], " ")
+    end
+    println()
+end
 
 end # module
