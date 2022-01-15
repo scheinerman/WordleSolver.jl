@@ -100,11 +100,11 @@ julia> WordleSolver.wordle_score("KARMA", "ANKLE")
 
 
 
-## Need a better dictionary
+## Need a better word list
 
 The dictionary `/usr/share/dict/words` includes many obscure words. That means that when trying to guess the computer's word, it is often the case that the secret word is unfamiliar. 
 
-And there are common five-letter words that are not included in the dictionary, such as `PASTA`. 
+There are common five-letter words that are not included in the dictionary on Mac, such as `PASTA`. The Linux word list includes `PASTA`. 
 
 
 

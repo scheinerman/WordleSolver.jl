@@ -3,9 +3,25 @@ using Random
 
 export hist_check, wordle_solver, wordle_play
 
-# export wordle_score, read_tuple, wordle_validate, read_word, hist_report
-
 const five = 5
+
+"""
+    validate_word(word::String)
+Filter for reading dictionary from disk. Make sure words are 
+five letters long, standard character set, and all lower case.
+"""
+function validate_word(word::String)::Bool 
+    if length(word) != five 
+        return false
+    end
+    if any(isuppercase(c) for c in word)
+        return false 
+    end
+    if any( c<'a' || c>'z' for c in word)
+        return false
+    end
+    return true
+end
 
 
 """
@@ -20,17 +36,12 @@ function load_words(file_name::String = "/usr/share/dict/words")::Vector{String}
     S = Set{String}()
 
     for w in words
-        if length(w) != five
-            continue
+        if validate_word(w)
+            push!(S, uppercase(w))
         end
-        if any(isuppercase(c) for c in w)
-            continue
-        end
-        push!(S, uppercase(w))
     end
 
     wlist = collect(S)
-    wlist = wlist[randperm(length(wlist))]
     return wlist
 end
 
@@ -112,6 +123,8 @@ Scores are entered as a list of five comma-separated numbers with
 """
 function wordle_solver(words::Vector{String})
     hist = Dict{String,NTuple{five,Int}}()
+    nw = length(words)
+    words = words[randperm(nw)]
 
     bad_message = "\nYour entry is invalid. Please try again."
 
@@ -229,6 +242,8 @@ end
 
 function wordle_play()
     ww = load_words()
+    nw = length(ww)
+    idx = mod1(rand(Int), nw)
     code = first(ww)
     wordle_play(code)
 end
