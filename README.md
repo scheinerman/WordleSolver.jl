@@ -98,6 +98,31 @@ julia> WordleSolver.wordle_score("KARMA", "ANKLE")
 (1, 1, 0, 0, 0)
 ```
 
+## Auto play
+
+The function `auto_play` allows the computer to solve a Wordle puzzle without user input. It can be called as `auto_play(word)` to try to find `word`, 
+or `auto_play()` to solve for a randomly chosen word.
+```julia
+julia> auto_play("spoon")
+T O P I C 
+- + + - - 
+
+P R O V E 
++ - * - - 
+
+S W O O P 
+* - * * + 
+
+S P O O M 
+* * * * - 
+
+S P O O N 
+* * * * * 
+
+
+Success in 5 guesses!!
+```
+
 
 
 ## Need a better word list
