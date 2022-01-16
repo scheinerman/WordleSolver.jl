@@ -262,4 +262,7 @@ function present_score(word::String, score::NTuple{five,Int})
     println()
 end
 
+include("auto_play.jl")
+
+
 end # module
