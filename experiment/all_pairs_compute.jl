@@ -41,6 +41,15 @@ function split_size(word::String, table::Dict{Tuple{String,String},Int16})
     return maximum(values(c))
 end
 
+
+"""
+    best_first_guess(table)
+
+Compute an optimal first guess for Wordle that minimizes the largest 
+number of words that may be possible after that guess.
+
+Here `table = all_pairs_compute();`
+"""
 function best_first_guess(table::Dict{Tuple{String,String},Int16})
     wlist = load_words()
     best_word = first(wlist)
@@ -58,4 +67,11 @@ function best_first_guess(table::Dict{Tuple{String,String},Int16})
     end
 
     return best_word
+end
+
+
+function best_first_guess()
+    println("Computing all pairs table.")
+    table = all_pairs_compute()
+    return best_first_guess(table)
 end
