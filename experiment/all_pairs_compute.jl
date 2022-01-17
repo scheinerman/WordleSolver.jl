@@ -43,6 +43,40 @@ end
 
 
 """
+    make_split_table(table)
+Make a table of split sizes.
+"""
+function make_split_table(table::Dict{Tuple{String,String},Int16})
+    stable = Dict{String,Int}()
+    wlist = load_words()
+    nw = length(wlist)
+    PM = Progress(nw)
+    for word in wlist 
+        stable[word] = split_size(word, table)
+        next!(PM)
+    end
+    return stable
+end
+
+function sorted_split_table(table::Dict{Tuple{String,String},Int16})
+    sp_tab = make_split_table(table)
+    wlist = load_words()
+    sp_vector = [ (w, sp_tab[w]) for w in wlist ]
+
+    function LT(p1, p2)
+        if p1[2] < p2[2]
+            return true
+        end
+        return false
+    end
+
+    return sort(sp_vector; lt = LT)
+
+end
+
+
+
+"""
     best_first_guess(table)
 
 Compute an optimal first guess for Wordle that minimizes the largest 
