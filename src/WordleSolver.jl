@@ -1,12 +1,14 @@
 module WordleSolver
 using Random
 
-export hist_check, wordle_solver, wordle_play
+export hist_check, wordle_solver, wordle_play, load_words
 
 const five = 5
 
 word_source = homedir() * "/.julia/dev/WordleSolver/src/stanford-words.txt"
 unix_source = "/usr/share/dict/words"
+
+WORD_LIST = Vector{String}()  # place to hold list of words so we only load it once
 
 """
     validate_word(word::String)
@@ -33,19 +35,23 @@ Read in all (lowercase) five letter words from a file and return them
 as a shuffled list (in uppercase).
 """
 function load_words(file_name::String = word_source)::Vector{String}
+    if length(WORD_LIST) > 0
+        return WORD_LIST 
+    end
+
     F = open(file_name)
-    words = readlines(F)
+    wlist = readlines(F)
 
-    S = Set{String}()
+    # S = Set{String}()
 
-    for w in words
+    for w in wlist
         if validate_word(w)
-            push!(S, uppercase(w))
+            push!(WORD_LIST, uppercase(w))
         end
     end
 
-    wlist = collect(S)
-    return wlist
+    return WORD_LIST
+    
 end
 
 """
