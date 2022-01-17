@@ -23,13 +23,13 @@ function auto_play(code::String)
 
             if result == Tuple(2 for _ = 1:five)
                 steps = length(hist) + 1
-                println("\nSuccess in $steps guesses!!")
+                println("Success in $steps guesses!!")
                 return
             end
             hist[g] = result
         end
     end
-    println("\nI give up.")
+    println("I give up.")
     return hist
 end
 

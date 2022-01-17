@@ -5,6 +5,9 @@ export hist_check, wordle_solver, wordle_play
 
 const five = 5
 
+word_source = homedir() * "/.julia/dev/WordleSolver/src/stanford-words.txt"
+unix_source = "/usr/share/dict/words"
+
 """
     validate_word(word::String)
 Filter for reading dictionary from disk. Make sure words are 
@@ -25,11 +28,11 @@ end
 
 
 """
-    load_words(file_name="/usr/share/dict/words")
+    load_words(file_name)
 Read in all (lowercase) five letter words from a file and return them 
 as a shuffled list (in uppercase).
 """
-function load_words(file_name::String = "/usr/share/dict/words")::Vector{String}
+function load_words(file_name::String = word_source)::Vector{String}
     F = open(file_name)
     words = readlines(F)
 
