@@ -26,7 +26,7 @@ end
 
 
 """
-    bee_solve('a', "bcdefg")
+    bee_solver('a', "bcdefg")
 Find all words with 4 or more letters that must use `a`
 and any of the letters in "bcdefg".
 """
