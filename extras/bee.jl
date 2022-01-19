@@ -44,3 +44,19 @@ function bee_solver(middle::String, surround::String)::Set{String}
     end
     bee_solver(middle[1], surround)
 end
+
+
+function bingo_filter(word::String, letters::String)::Bool 
+    all(c ∈ letters for c in word)
+end
+
+"""
+    bingo(letters)
+Find all words that include all the characters in `letters`.
+"""
+function bingo(letters::String)
+    wlist = load_all_words()
+    letters = uppercase(letters)
+    S = Set(word for word in wlist if bingo_filter(word,letters) && bingo_filter(letters,word))
+    return S
+end
