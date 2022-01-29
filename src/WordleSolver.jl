@@ -5,8 +5,9 @@ export hist_check, wordle_solver, wordle_play, load_words
 
 const five = 5
 
-word_source = homedir() * "/.julia/dev/WordleSolver/src/stanford-words.txt"
+stanford_source = homedir() * "/.julia/dev/WordleSolver/src/stanford-words.txt"
 unix_source = "/usr/share/dict/words"
+wordle_answers = homedir() * "/.julia/dev/WordleSolver/src/wordle-answers.txt"
 
 WORD_LIST = Vector{String}()  # place to hold list of words so we only load it once
 
@@ -34,7 +35,7 @@ end
 Read in all (lowercase) five letter words from a file and return them 
 as a shuffled list (in uppercase).
 """
-function load_words(file_name::String = word_source)::Vector{String}
+function load_words(file_name::String = wordle_answers)::Vector{String}
     if length(WORD_LIST) > 0
         return WORD_LIST 
     end
