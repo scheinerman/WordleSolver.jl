@@ -12,15 +12,10 @@ function auto_play(code::String)
     nw = length(words)
     words = words[randperm(nw)]
 
-
     for g in words
         if wordle_validate(g, hist)
-
             result = wordle_score(g, code)
-
-            present_score(g, result)
-            println()
-
+            wordle_print(g, result)
             if result == Tuple(2 for _ = 1:five)
                 steps = length(hist) + 1
                 println("Success in $steps guesses!!")

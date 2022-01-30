@@ -240,7 +240,9 @@ function wordle_play(code::String)
         end
 
         result = wordle_score(w, code)
-        present_score(w, result)
+
+        wordle_print(w,result)
+
         println("Score = $result")
         if w == code
             break
@@ -271,6 +273,7 @@ function present_score(word::String, score::NTuple{five,Int})
     end
     println()
 end
+include("wordle_print.jl")
 
 include("auto_play.jl")
 
