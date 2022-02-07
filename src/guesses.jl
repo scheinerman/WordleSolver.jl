@@ -10657,3 +10657,4 @@ guesses = [
 "zymes"
 "zymic"
 ]
+guesses = uppercase.(guesses)

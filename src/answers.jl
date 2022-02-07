@@ -2315,3 +2315,5 @@ answers = [
 "zesty"
 "zonal"
 ]
+
+answers = uppercase.(answers)
