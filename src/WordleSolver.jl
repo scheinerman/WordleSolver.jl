@@ -3,27 +3,29 @@ using Random
 
 export hist_check, wordle_solver, wordle_play, load_words
 
+include("guesses.jl")
+include("answers.jl")
 const five = 5
 
 stanford_source = homedir() * "/.julia/dev/WordleSolver/src/stanford-words.txt"
 unix_source = "/usr/share/dict/words"
 wordle_answers = homedir() * "/.julia/dev/WordleSolver/src/wordle-answers.txt"
 
-WORD_LIST = Vector{String}()  # place to hold list of words so we only load it once
+WORD_LIST = make_answers() # place to hold list of words so we only load it once
 
 """
     validate_word(word::String)
 Filter for reading dictionary from disk. Make sure words are 
 five letters long, standard character set, and all lower case.
 """
-function validate_word(word::String)::Bool 
-    if length(word) != five 
+function validate_word(word::String)::Bool
+    if length(word) != five
         return false
     end
     if any(isuppercase(c) for c in word)
-        return false 
+        return false
     end
-    if any( c<'a' || c>'z' for c in word)
+    if any(c < 'a' || c > 'z' for c in word)
         return false
     end
     return true
@@ -37,7 +39,7 @@ as a shuffled list (in uppercase).
 """
 function load_words(file_name::String = wordle_answers)::Vector{String}
     if length(WORD_LIST) > 0
-        return WORD_LIST 
+        return WORD_LIST
     end
 
     F = open(file_name)
@@ -52,7 +54,7 @@ function load_words(file_name::String = wordle_answers)::Vector{String}
     end
 
     return WORD_LIST
-    
+
 end
 
 """
@@ -241,7 +243,7 @@ function wordle_play(code::String)
 
         result = wordle_score(w, code)
 
-        wordle_print(w,result)
+        wordle_print(w, result)
 
         println("Score = $result")
         if w == code
