@@ -1,5 +1,9 @@
 # `WordleSolver`
 
+
+# CLOSED FOR REPAIRS ... IGNORE EVERYTHING HERE
+
+
 Solve Wordle puzzles interactively. This is a demonstration project and not ready for prime time. We use [this list](https://gist.github.com/cfreshman/a03ef2cba789d8cf00c08f767e0fad7b#file-wordle-answers-alphabetical-txt) of five-letter words.
 
 ## Play Wordle with the computer
