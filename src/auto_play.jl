@@ -8,7 +8,7 @@ Computer solves a Wordle puzzle without user inputs.
 function auto_play(code::String)
     code = uppercase(code)
     hist = Dict{String,NTuple{five,Int}}()
-    words = load_words()
+    words = ANS_LIST
     nw = length(words)
     words = words[randperm(nw)]
 
@@ -30,7 +30,7 @@ end
 
 
 function auto_play()
-    ww = load_words()
+    ww = ANS_LIST
     nw = length(ww)
     idx = mod1(rand(Int), nw)
     code = ww[idx]

@@ -1,67 +1,24 @@
 module WordleSolver
-using Random
+using Random, ProgressMeter
 
-export hist_check, wordle_solver, wordle_play, load_words
+export hist_check, wordle_solver, wordle_play, wordle_score
 
 include("guesses.jl")
 include("answers.jl")
 const five = 5
 
 
-WORD_LIST = make_answers() # place to hold list of words so we only load it once
+ANS_LIST = make_answers() # place to hold list of words so we only load it once
+ANS_SET = Set(ANS_LIST)
 
-"""
-    validate_word(word::String)
-Filter for reading dictionary from disk. Make sure words are 
-five letters long, standard character set, and all lower case.
-"""
-function validate_word(word::String)::Bool
-    if length(word) != five
-        return false
-    end
-    if any(isuppercase(c) for c in word)
-        return false
-    end
-    if any(c < 'a' || c > 'z' for c in word)
-        return false
-    end
-    return true
-end
+GUESS_SET = Set(make_guesses()) ∪ ANS_SET 
+GUESS_LIST = collect(GUESS_SET)
 
 
-"""
-    load_words(file_name)
-Read in all (lowercase) five letter words from a file and return them 
-as a shuffled list (in uppercase).
-"""
-function load_words()::Vector{String}
-    # if length(WORD_LIST) > 0
-    #     return WORD_LIST
-    # end
 
-    # F = open(file_name)
-    # wlist = readlines(F)
 
-    # # S = Set{String}()
 
-    # for w in wlist
-    #     if validate_word(w)
-    #         push!(WORD_LIST, uppercase(w))
-    #     end
-    # end
-
-    return WORD_LIST
-
-end
-
-"""
-    wordle_score(guess, code)
-Given two five letter words, return a five-tuple with the following meanings:
-* `0` means that letter in `guess` does not appear in `code`.
-* `1` means that letter in `guess` appears in `code`, but in another position.
-* `2` means that latter in `guess` appears in `code` in that position. 
-"""
-function wordle_score(guess::String, code::String)::NTuple{five,Int}
+function slow_wordle_score(guess::String, code::String)::NTuple{five,Int}
     result = [0 for _ = 1:five]
     used = [false for _ = 1:five]
 
@@ -86,10 +43,39 @@ function wordle_score(guess::String, code::String)::NTuple{five,Int}
             end
         end
     end
-
-
     return Tuple(result)
 end
+
+include("pre_compute_tools.jl")
+
+println("Precomputing for a minute")
+SCORE_TABLE = all_pairs_compute()
+
+"""
+    wordle_score(guess, answer)
+Given two five letter words, return a five-tuple with the following meanings:
+* `0` means that letter in `guess` does not appear in `answer`.
+* `1` means that letter in `guess` appears in `answer`, but in another position.
+* `2` means that latter in `guess` appears in `answer` in that position. 
+
+This assumes that `guess` and `answer` are valid five-letter words.
+"""
+function wordle_score(guess::String, answer::String)::NTuple{five,Int}
+    b = 0x0
+    try
+        b = SCORE_TABLE[guess,answer]
+    catch
+        # if guess ∉ GUESS_SET
+        #     println("$guess is not a valid guess word")
+        # end
+        # if answer ∉ ANS_LIST
+        #     println("$answer is not a valid hidden word")
+        # end
+        error("Bad word pair ($guess,$answer)")
+    end
+    return byte_2_code(b)
+end
+
 
 """
     read_tuple
@@ -130,10 +116,10 @@ Scores are entered as a list of five comma-separated numbers with
 * 1 letter is in the word but in the wrong position
 * 2 letter is in the word and in the right position
 """
-function wordle_solver(words::Vector{String})
+function wordle_solver()
     hist = Dict{String,NTuple{five,Int}}()
-    nw = length(words)
-    words = words[randperm(nw)]
+    nw = length(ANS_LIST)
+    words = ANS_LIST[randperm(nw)]
 
     bad_message = "\nYour entry is invalid. Please try again."
 
@@ -168,7 +154,6 @@ function wordle_solver(words::Vector{String})
     return hist
 end
 
-wordle_solver() = wordle_solver(load_words())
 
 """
     hist_check(d,code)
@@ -252,7 +237,7 @@ function wordle_play(code::String)
 end
 
 function wordle_play()
-    ww = load_words()
+    ww = ANS_LIST
     nw = length(ww)
     idx = mod1(rand(Int), nw)
     code = ww[idx]
@@ -273,7 +258,6 @@ function present_score(word::String, score::NTuple{five,Int})
     println()
 end
 include("wordle_print.jl")
-
 include("auto_play.jl")
 
 
