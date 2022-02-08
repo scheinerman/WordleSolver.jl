@@ -34,21 +34,21 @@ end
 Read in all (lowercase) five letter words from a file and return them 
 as a shuffled list (in uppercase).
 """
-function load_words(file_name::String = wordle_answers)::Vector{String}
-    if length(WORD_LIST) > 0
-        return WORD_LIST
-    end
+function load_words()::Vector{String}
+    # if length(WORD_LIST) > 0
+    #     return WORD_LIST
+    # end
 
-    F = open(file_name)
-    wlist = readlines(F)
+    # F = open(file_name)
+    # wlist = readlines(F)
 
-    # S = Set{String}()
+    # # S = Set{String}()
 
-    for w in wlist
-        if validate_word(w)
-            push!(WORD_LIST, uppercase(w))
-        end
-    end
+    # for w in wlist
+    #     if validate_word(w)
+    #         push!(WORD_LIST, uppercase(w))
+    #     end
+    # end
 
     return WORD_LIST
 
