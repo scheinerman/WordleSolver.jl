@@ -22,23 +22,22 @@ export all_pairs_compute, code_2_byte, byte_2_code
     all_pairs_compute
 Precompute a (compressed) Wordle score for all pairs of words.
 """
-function all_pairs_compute()::Dict{Tuple{String,String},Byte}
-
-    table = Dict{Tuple{String,String},Int16}()
+function all_pairs_compute()::Matrix{Byte}
 
     n_ans = length(ANS_LIST)
     n_guess = length(GUESS_LIST)
-
-
+    M = zeros(Byte, n_guess, n_ans)
 
     PM = Progress(n_guess)
     for i = 1:n_guess
         a = GUESS_LIST[i]
         for j = 1:n_ans
             b = ANS_LIST[j]
-            table[a, b] = code_2_byte(slow_wordle_score(a, b))
+            M[i,j] = code_2_byte(wordle_score(a, b))
         end
         next!(PM)
     end
-    return table
+    return M
 end
+
+

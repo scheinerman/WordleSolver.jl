@@ -12,13 +12,20 @@ ANS_LIST = make_answers() # place to hold list of words so we only load it once
 ANS_SET = Set(ANS_LIST)
 
 GUESS_SET = Set(make_guesses()) ∪ ANS_SET 
-GUESS_LIST = collect(GUESS_SET)
+GUESS_LIST = sort(collect(GUESS_SET))
 
 
 
+"""
+    wordle_score(guess, answer)
+Given two five letter words, return a five-tuple with the following meanings:
+* `0` means that letter in `guess` does not appear in `answer`.
+* `1` means that letter in `guess` appears in `answer`, but in another position.
+* `2` means that latter in `guess` appears in `answer` in that position. 
 
-
-function slow_wordle_score(guess::String, code::String)::NTuple{five,Int}
+This assumes that `guess` and `answer` are valid five-letter words.
+"""
+function wordle_score(guess::String, code::String)::NTuple{five,Int}
     result = [0 for _ = 1:five]
     used = [false for _ = 1:five]
 
@@ -49,31 +56,23 @@ end
 include("pre_compute_tools.jl")
 
 println("Precomputing for a minute")
-SCORE_TABLE = all_pairs_compute()
+SCORE_MATRIX = all_pairs_compute()
 
-"""
-    wordle_score(guess, answer)
-Given two five letter words, return a five-tuple with the following meanings:
-* `0` means that letter in `guess` does not appear in `answer`.
-* `1` means that letter in `guess` appears in `answer`, but in another position.
-* `2` means that latter in `guess` appears in `answer` in that position. 
 
-This assumes that `guess` and `answer` are valid five-letter words.
-"""
-function wordle_score(guess::String, answer::String)::NTuple{five,Int}
-    b = 0x0
-    try
-        b = SCORE_TABLE[guess,answer]
-    catch
-        # if guess ∉ GUESS_SET
-        #     println("$guess is not a valid guess word")
-        # end
-        # if answer ∉ ANS_LIST
-        #     println("$answer is not a valid hidden word")
-        # end
-        error("Bad word pair ($guess,$answer)")
-    end
-    return byte_2_code(b)
+function fast_wordle_score(guess::String, answer::String)::NTuple{five,Int}
+    return byte_2_code(SCORE_MATRIX[guess,answer])
+    # try
+    #     b = SCORE_TABLE[guess,answer]
+    # catch
+    #     # if guess ∉ GUESS_SET
+    #     #     println("$guess is not a valid guess word")
+    #     # end
+    #     # if answer ∉ ANS_LIST
+    #     #     println("$answer is not a valid hidden word")
+    #     # end
+    #     error("Bad word pair ($guess,$answer)")
+    # end
+    # return byte_2_code(b)
 end
 
 
