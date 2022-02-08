@@ -7,9 +7,6 @@ include("guesses.jl")
 include("answers.jl")
 const five = 5
 
-stanford_source = homedir() * "/.julia/dev/WordleSolver/src/stanford-words.txt"
-unix_source = "/usr/share/dict/words"
-wordle_answers = homedir() * "/.julia/dev/WordleSolver/src/wordle-answers.txt"
 
 WORD_LIST = make_answers() # place to hold list of words so we only load it once
 
