@@ -49,11 +49,11 @@ end
 include("startup.jl")
 
 
-function fast_wordle_score(guess::String, answer::String)::NTuple{five,Int}
+function fast_wordle_score(guess::String, answer::String)::Byte
     g = GUESS_DICT[guess]
     a = ANS_DICT[answer]
     @inbounds b = SCORE_MATRIX[g, a]
-    return byte_2_code(b)
+    return b
 end
 
 
