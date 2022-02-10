@@ -7,7 +7,9 @@ include("answers.jl")
 ANS_LIST = make_answers() # place to hold list of words so we only load it once
 
 # list of allowable guesses
-GUESS_LIST = Set(ANS_LIST) ∪ Set(make_guesses()) |> collect |> sort
+# GUESS_LIST = Set(ANS_LIST) ∪ Set(make_guesses()) |> collect |> sort
+
+GUESS_LIST = vcat(ANS_LIST, make_guesses())
 
 
 # reverse lookup dictionaries. Given a word, find where in the appropriate list
@@ -19,7 +21,9 @@ for j = 1:length(ANS_LIST)
     ANS_DICT[w] = j
 end
 
-@info "Answer dictionary has $(length(ANS_DICT)) entries"
+NA = length(ANS_DICT)
+
+@info "Answer dictionary has $NA entries"
 
 GUESS_DICT = Dict{String,Int}()
 for j = 1:length(GUESS_LIST)
@@ -27,7 +31,9 @@ for j = 1:length(GUESS_LIST)
     GUESS_DICT[w] = j
 end
 
-@info "Guess dictionary has $(length(GUESS_DICT)) entries"
+
+NG = length(GUESS_DICT)
+@info "Guess dictionary has $NG entries"
 
 
 include("pre_compute_tools.jl")

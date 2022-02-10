@@ -49,13 +49,11 @@ end
 include("startup.jl")
 
 
-function fast_wordle_score(guess::String, answer::String)::Byte
-    g = GUESS_DICT[guess]
-    a = ANS_DICT[answer]
-    @inbounds b = SCORE_MATRIX[g, a]
-    return b
+function fast_wordle_score(guess::Int, answer::Int)::Byte
+     return SCORE_MATRIX[guess, answer]
 end
 
+include("evaluation.jl")
 
 """
     read_tuple
