@@ -33,11 +33,9 @@ function all_pairs_compute()::Matrix{Byte}
         a = GUESS_LIST[i]
         for j = 1:n_ans
             b = ANS_LIST[j]
-            M[i,j] = code_2_byte(wordle_score(a, b))
+            M[i, j] = code_2_byte(wordle_score(a, b))
         end
         next!(PM)
     end
     return M
 end
-
-

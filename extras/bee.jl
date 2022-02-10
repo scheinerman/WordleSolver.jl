@@ -17,10 +17,10 @@ function load_all_words(file_name::String = "/usr/share/dict/words")::Set{String
 end
 
 function bee_filter(word::String, middle::Char, surround::String)::Bool
-    if middle ∉ word 
-        return false 
+    if middle ∉ word
+        return false
     end
-    valids = surround * middle 
+    valids = surround * middle
     return all(c ∈ valids for c ∈ word)
 end
 
@@ -46,7 +46,7 @@ function bee_solver(middle::String, surround::String)::Set{String}
 end
 
 
-function bingo_filter(word::String, letters::String)::Bool 
+function bingo_filter(word::String, letters::String)::Bool
     all(c ∈ letters for c in word)
 end
 
@@ -57,6 +57,9 @@ Find all words that include all the characters in `letters`.
 function bingo(letters::String)
     wlist = load_all_words()
     letters = uppercase(letters)
-    S = Set(word for word in wlist if bingo_filter(word,letters) && bingo_filter(letters,word))
+    S = Set(
+        word for
+        word in wlist if bingo_filter(word, letters) && bingo_filter(letters, word)
+    )
     return S
 end

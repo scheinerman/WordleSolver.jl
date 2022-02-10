@@ -3,16 +3,9 @@ using Random, ProgressMeter
 
 export hist_check, wordle_solver, wordle_play, wordle_score
 
-include("guesses.jl")
-include("answers.jl")
+export fast_wordle_score
+
 const five = 5
-
-
-ANS_LIST = make_answers() # place to hold list of words so we only load it once
-ANS_SET = Set(ANS_LIST)
-
-GUESS_SET = Set(make_guesses()) ∪ ANS_SET 
-GUESS_LIST = sort(collect(GUESS_SET))
 
 
 
@@ -26,8 +19,8 @@ Given two five letter words, return a five-tuple with the following meanings:
 This assumes that `guess` and `answer` are valid five-letter words.
 """
 function wordle_score(guess::String, code::String)::NTuple{five,Int}
-    result = [0 for _ = 1:five]
-    used = [false for _ = 1:five]
+    result = zeros(Int, five)
+    used = zeros(Bool, five)
 
 
     # find letters that match in position
@@ -53,26 +46,14 @@ function wordle_score(guess::String, code::String)::NTuple{five,Int}
     return Tuple(result)
 end
 
-include("pre_compute_tools.jl")
-
-println("Precomputing for a minute")
-SCORE_MATRIX = all_pairs_compute()
+include("startup.jl")
 
 
 function fast_wordle_score(guess::String, answer::String)::NTuple{five,Int}
-    return byte_2_code(SCORE_MATRIX[guess,answer])
-    # try
-    #     b = SCORE_TABLE[guess,answer]
-    # catch
-    #     # if guess ∉ GUESS_SET
-    #     #     println("$guess is not a valid guess word")
-    #     # end
-    #     # if answer ∉ ANS_LIST
-    #     #     println("$answer is not a valid hidden word")
-    #     # end
-    #     error("Bad word pair ($guess,$answer)")
-    # end
-    # return byte_2_code(b)
+    g = GUESS_DICT[guess]
+    a = ANS_DICT[answer]
+    @inbounds b = SCORE_MATRIX[g, a]
+    return byte_2_code(b)
 end
 
 
