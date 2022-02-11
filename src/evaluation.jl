@@ -26,6 +26,8 @@ end
 
 export make_counts
 
+# These are three scoring functions to evaluate a list of possible 
+
 function min_max_score(g::Int, possibles::Vector{Int})::Int
     c = make_counts(g, possibles)
     return maximum(values(c))
@@ -36,15 +38,19 @@ function entropy_score(g::Int, possibles::Vector{Int})
     return sum(x * log(x) for x in values(c))
 end
 
+random_score(g::Int, possibles::Vector{Int}) = 1
+
 """
     best_guess(possibles, score_func)
 Given a list of possible answers (given by `filter_answers`), return a best guess 
 based on minimizing `score_func`.
 """
 function best_guess(possibles::Vector{Int}, score_func::Function = min_max_score)
+    #possibles = shuffle(possibles)
     best_g = first(possibles)
     best_s = score_func(best_g, possibles)
-    for g in possibles
+    glist = shuffle(collect(1:NG))
+    for g in glist
         s = score_func(g,possibles)
         if s < best_s 
             best_g = g 
@@ -54,4 +60,4 @@ function best_guess(possibles::Vector{Int}, score_func::Function = min_max_score
     return best_g
 end
 
-export best_guess, min_max_score, entropy_score
+export best_guess, min_max_score, entropy_score, random_score

@@ -1,5 +1,5 @@
 module WordleSolver
-using Random, ProgressMeter, Counters
+using Random, ProgressMeter, Counters, Random
 
 export hist_check, wordle_solver, wordle_play, wordle_score
 
