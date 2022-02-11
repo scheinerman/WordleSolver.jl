@@ -42,9 +42,9 @@ Given a list of possible answers (given by `filter_answers`), return a best gues
 based on minimizing `score_func`.
 """
 function best_guess(possibles::Vector{Int}, score_func::Function = min_max_score)
-    best_g = 1
+    best_g = first(possibles)
     best_s = score_func(best_g, possibles)
-    for g = 1:NG
+    for g in possibles
         s = score_func(g,possibles)
         if s < best_s 
             best_g = g 
