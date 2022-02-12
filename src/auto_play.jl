@@ -1,38 +1,78 @@
 export auto_play
 
 """
-    auto_play(code::String)
-    auto_play
-Computer solves a Wordle puzzle without user inputs.
-"""
-function auto_play(code::String)
-    code = uppercase(code)
-    hist = Dict{String,NTuple{five,Int}}()
-    words = ANS_LIST
-    nw = length(words)
-    words = words[randperm(nw)]
+    auto_play(answer::String; scorer::Function = min_max_score, verbose::Bool = true)
+    auto_play(; scorer::Function = min_max_score, verbose::Bool = true)
+    auto_play(a::Int; scorer::Function = min_max_score)
+    
+Computer solves a Wordle puzzle without user inputs. The number of steps to solve is returned.
 
-    for g in words
-        if wordle_validate(g, hist)
-            result = wordle_score(g, code)
-            wordle_print(g, result)
-            if result == Tuple(2 for _ = 1:five)
-                steps = length(hist) + 1
-                println("Success in $steps guesses!!")
-                return
-            end
-            hist[g] = result
-        end
+* In the first case, `answer` is a five-letter word given by the user. 
+* In the second case, the five-letter word is randomly chosen by the computer.
+* In the third case, an integer index into `ANS_LIST` is the input, and `verbose` is set to `false`.
+
+The `scorcer` function is one of:
+* `min_max_score`
+* `entropy_score`
+* `equi_score`
+
+The first guess is chosen from the dictionary `FIRST_GUESS` depending on the `scorer` function.
+"""
+function auto_play(answer::String; scorer::Function = min_max_score, verbose::Bool = true)
+    a = ANS_DICT[uppercase(answer)]  # this is the word we want to guess; throws an error if bad word
+
+    stop = code_2_byte((2,2,2,2,2))
+    history = Dict{Int,Byte}()
+
+    g = FIRST_GUESS[scorer]
+    x = fast_wordle_score(g, a)
+    history[g] = x
+    if verbose
+        guess = GUESS_LIST[g]
+        wordle_print(guess, byte_2_code(x))
     end
-    println("I give up.")
-    return hist
+
+    while x != stop 
+        possibles = filter_answers(history)
+        g = best_guess(possibles)
+        x = fast_wordle_score(g,a)
+        if verbose
+            guess = GUESS_LIST[g]
+            wordle_print(guess, byte_2_code(x))
+        end
+        history[g] = x
+    end
+    return length(history)
+end
+
+function auto_play(; scorer::Function = min_max_score, verbose::Bool = true)
+    a = mod1(rand(Int), NA)
+    answer = ANS_LIST[a]
+    auto_play(answer, scorer = scorer, verbose = verbose)
 end
 
 
-function auto_play()
-    ww = ANS_LIST
-    nw = length(ww)
-    idx = mod1(rand(Int), nw)
-    code = ww[idx]
-    auto_play(code)
+function auto_play(a::Int; scorer::Function = min_max_score)
+    answer = ANS_LIST[a]
+    auto_play(answer, scorer=scorer, verbose = false)
+
+end
+
+export score_all
+
+
+"""
+    score_all(scorer::Function = min_max_score)
+Use the selected `scorer` function to solve all possible Wordle words 
+once each and return a vector containing the number of steps for each 
+solution. 
+"""
+function score_all(scorer::Function = min_max_score)
+    result = zeros(Int, NA)
+    PM = Progress(NA)
+    for a = 1:NA
+        result[a] = auto_play(a, scorer=scorer)
+        next!(PM)
+    end
+    return result
 end
