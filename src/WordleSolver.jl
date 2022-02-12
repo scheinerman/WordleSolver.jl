@@ -229,10 +229,8 @@ function wordle_play(code::String)
 end
 
 function wordle_play()
-    ww = ANS_LIST
-    nw = length(ww)
-    idx = mod1(rand(Int), nw)
-    code = ww[idx]
+    idx = mod1(rand(Int), NA)
+    code = ANS_LIST[idx]
     wordle_play(code)
 end
 
