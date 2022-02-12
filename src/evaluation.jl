@@ -85,7 +85,7 @@ export best_guess, min_max_score, entropy_score, equi_score
 FIRST_GUESS = Dict{Function,Int}()
 # @info "Precomputing first guesses"
 
-FIRST_GUESS[min_max_score] = 9730
+FIRST_GUESS[min_max_score] = 1535
 FIRST_GUESS[equi_score] = 1
 FIRST_GUESS[entropy_score] = 10846
 
