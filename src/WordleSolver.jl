@@ -50,7 +50,7 @@ include("startup.jl")
 
 
 function fast_wordle_score(guess::Int, answer::Int)::Byte
-     return SCORE_MATRIX[guess, answer]
+    return SCORE_MATRIX[guess, answer]
 end
 
 include("evaluation.jl")
@@ -65,88 +65,102 @@ function read_tuple()::NTuple{five,Int}
     str = readline()
     parsed = Base.Meta.parse(str)
     result = eval(parsed)
-    return result
-end
 
-"""
-    wordle_validate(guess, history)
-See if the word `guess` is consistent with the results we previously seen.
-"""
-function wordle_validate(guess::String, history::Dict{String,NTuple{five,Int}})::Bool
-    if length(history) == 0
-        return true
-    end
-
-    for code in keys(history)
-        if wordle_score(code, guess) != history[code]
-            return false
+    for t in result
+        if t < 0 || t > 2
+            error("Invalid tuple $result")
         end
     end
 
-    return true
+    return result
 end
 
+
+
 """
-    wordle_solver
+    wordle_solver(scorer = min_max_score)
 The computer guesses five-letter words and the human scores them. 
 Scores are entered as a list of five comma-separated numbers with 
 * 0 letter is not in the word
 * 1 letter is in the word but in the wrong position
 * 2 letter is in the word and in the right position
+
+The optional parameter `scorer` is the name of a scoring function. 
+Choices are:
+    * `min_max_score` --- default
+    * `entropy_score`
+    * `equi_score`
 """
-function wordle_solver()
-    hist = Dict{String,NTuple{five,Int}}()
-    nw = length(ANS_LIST)
-    words = ANS_LIST[randperm(nw)]
+function wordle_solver(scorer::Function = min_max_score)
+    history = Dict{Int,Byte}()
+    stop = code_2_byte((2, 2, 2, 2, 2))
 
     bad_message = "\nYour entry is invalid. Please try again."
 
-    for g in words
-        if wordle_validate(g, hist)
-            result = ""
-            while true
-                println("\nI guess the word is $g")
-                print("Enter the result --> ")
-                try
-                    result = read_tuple()
-                    for x in result
-                        if x > 2 || x < 0
-                            println(bad_message)
-                            continue
-                        end
-                    end
-                    break
-                catch
-                    println(bad_message)
-                end
-            end
-            if result == Tuple(2 for _ = 1:five)
-                steps = length(hist) + 1
-                println("\nSuccess in $steps guesses!!")
+    while true
+        alist = filter_answers(history)
+        if length(alist) == 0    # something wrong; no possible answer
+            println("I give up")
+            print("What was your word? ")
+            w = readline()
+            w = uppercase(w)
+            try
+                x = ANS_DICT[w]
+            catch
+                println("$w is not a valid word")
                 return
             end
-            hist[g] = result
+            history_check(history, w)
+            return
+        end
+
+        shuffle!(alist)
+        g = best_guess(alist, scorer)
+        guess = GUESS_LIST[g]
+
+        # get user input
+        result = (0, 0, 0, 0, 0)
+        while true
+            println("\nI guess the word is $guess")
+            print("Enter the result --> ")
+            try
+                result = read_tuple()
+            catch
+                println(bad_message)
+                continue
+            end
+            break
+        end
+        x = code_2_byte(result)
+
+        history[g] = code_2_byte(result)
+        if x == stop
+            steps = length(history) 
+            println("\nSuccess in $steps guesses!!")
+            return
         end
     end
-    println("\nI give up.")
-    return hist
 end
 
-
 """
-    hist_check(d,code)
+    history_check(history,answer::String)
 Check the user inputs saved in the dictionary `d` with the code word `code`.   
 """
-function hist_check(hist::Dict{String,NTuple{five,Int}}, code::String)
-    code = uppercase(code)
-    for word in sort(collect(keys(hist)))
-        reply = hist[word]
-        result = wordle_score(word, code)
-        if reply != result
-            println("For my guess $word you said $reply but it should have been $result")
+function history_check(history::Dict{Int,Byte}, answer::String)
+    answer = uppercase(answer)
+    a = ANS_DICT[answer]  # code for answer  
+    for g in keys(history)
+        x = fast_wordle_score(g, a)
+        if x != history[g]
+            guess = GUESS_LIST[g]
+            println("\bWhen I guessed $guess you entered $(byte_2_code(history[g]))")
+            println("     but you should have entered $(byte_2_code(x))")
         end
     end
 end
+
+
+
 
 
 """
@@ -238,5 +252,7 @@ end
 include("wordle_print.jl")
 include("auto_play.jl")
 
+
+@info "Compilation completed"
 
 end # module

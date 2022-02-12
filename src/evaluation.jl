@@ -18,7 +18,11 @@ end
 
 export filter_answers, validate
 
-
+"""
+    make_counts(g::Int, possibles::Vector{Int})
+Given a guess `g` and a list of possible answers `possibles`
+create a `Counter` that shows how often each score occurs.
+"""
 function make_counts(g::Int, possibles::Vector{Int})::Counter{Byte}
     vals = [fast_wordle_score(g,a) for a in possibles]
     return counter(vals)
@@ -28,17 +32,30 @@ export make_counts
 
 # These are three scoring functions to evaluate a list of possible 
 
+"""
+    min_max_score(g, possibles)
+This score is the largest count returned by `make_counts`.
+"""
 function min_max_score(g::Int, possibles::Vector{Int})::Int
     c = make_counts(g, possibles)
     return maximum(values(c))
 end
 
+"""
+    entropy_score(g, possibles)
+This is the sum of `x * log(x)` where `x` is a counter value
+returned by `make_counts`.
+"""
 function entropy_score(g::Int, possibles::Vector{Int})
     c = make_counts(g, possibles)
     return sum(x * log(x) for x in values(c))
 end
 
-random_score(g::Int, possibles::Vector{Int}) = 1
+"""
+    equi_score(g, possibles)
+Always return `1`. This treats all guesses the same.
+"""
+equi_score(g::Int, possibles::Vector{Int}) = 1
 
 """
     best_guess(possibles, score_func)
@@ -60,4 +77,13 @@ function best_guess(possibles::Vector{Int}, score_func::Function = min_max_score
     return best_g
 end
 
-export best_guess, min_max_score, entropy_score, random_score
+export best_guess, min_max_score, entropy_score, equi_score
+
+
+FIRST_GUESS = Dict{Function, Int}()
+@info "Precomputing first guesses"
+
+for f in [min_max_score, entropy_score, equi_score]
+    @info "$f"
+    FIRST_GUESS[f] = best_guess(collect(1:NA), f)
+end

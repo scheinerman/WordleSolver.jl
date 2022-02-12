@@ -38,6 +38,7 @@ NG = length(GUESS_DICT)
 
 include("pre_compute_tools.jl")
 
-@info "Precomputing for a minute"
+@info "Precomputing scoring functions"
 
 SCORE_MATRIX = all_pairs_compute()
+
