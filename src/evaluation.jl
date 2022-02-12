@@ -63,10 +63,12 @@ Given a list of possible answers (given by `filter_answers`), return a best gues
 based on minimizing `score_func`.
 """
 function best_guess(possibles::Vector{Int}, score_func::Function = min_max_score)
-    #possibles = shuffle(possibles)
+    glist = shuffle(collect(1:NG))
+
     best_g = first(possibles)
     best_s = score_func(best_g, possibles)
-    glist = shuffle(collect(1:NG))
+
+
     for g in glist
         s = score_func(g, possibles)
         if s < best_s
@@ -81,7 +83,11 @@ export best_guess, min_max_score, entropy_score, equi_score
 
 
 FIRST_GUESS = Dict{Function,Int}()
-@info "Precomputing first guesses"
+# @info "Precomputing first guesses"
+
+FIRST_GUESS[min_max_score] = 9730
+FIRST_GUESS[equi_score] = 1
+FIRST_GUESS[entropy_score] = 10846
 
 
 function make_first_guesses()
@@ -94,5 +100,3 @@ function make_first_guesses()
 end
 
 export make_first_guesses
-
-make_first_guesses()

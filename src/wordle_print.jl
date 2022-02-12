@@ -17,3 +17,10 @@ function wordle_print(word::String, score::NTuple{five,Int})
     end
     println()
 end
+
+
+function wordle_print(idx::Int, b::Byte)
+    word = GUESS_LIST[idx]
+    score = byte_2_code(b)
+    wordle_print(word, score)
+end

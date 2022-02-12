@@ -21,24 +21,26 @@ The first guess is chosen from the dictionary `FIRST_GUESS` depending on the `sc
 function auto_play(answer::String; scorer::Function = min_max_score, verbose::Bool = true)
     a = ANS_DICT[uppercase(answer)]  # this is the word we want to guess; throws an error if bad word
 
-    stop = code_2_byte((2,2,2,2,2))
+    stop = code_2_byte((2, 2, 2, 2, 2))
     history = Dict{Int,Byte}()
 
     g = FIRST_GUESS[scorer]
+    if scorer == equi_score
+        g = mod1(rand(Int), NG)
+    end
+
     x = fast_wordle_score(g, a)
     history[g] = x
     if verbose
-        guess = GUESS_LIST[g]
-        wordle_print(guess, byte_2_code(x))
+        wordle_print(g, x)
     end
 
-    while x != stop 
+    while x != stop
         possibles = filter_answers(history)
-        g = best_guess(possibles)
-        x = fast_wordle_score(g,a)
+        g = best_guess(possibles, scorer)
+        x = fast_wordle_score(g, a)
         if verbose
-            guess = GUESS_LIST[g]
-            wordle_print(guess, byte_2_code(x))
+            wordle_print(g, x)
         end
         history[g] = x
     end
@@ -54,7 +56,7 @@ end
 
 function auto_play(a::Int; scorer::Function = min_max_score)
     answer = ANS_LIST[a]
-    auto_play(answer, scorer=scorer, verbose = false)
+    auto_play(answer, scorer = scorer, verbose = false)
 
 end
 
@@ -71,7 +73,7 @@ function score_all(scorer::Function = min_max_score)
     result = zeros(Int, NA)
     PM = Progress(NA)
     for a = 1:NA
-        result[a] = auto_play(a, scorer=scorer)
+        result[a] = auto_play(a, scorer = scorer)
         next!(PM)
     end
     return result
