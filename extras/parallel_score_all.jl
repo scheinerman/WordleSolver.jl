@@ -8,7 +8,7 @@ Use the scoring method `scorer` to solve all possible Wordle puzzles
 repetitions and possible words).
 
 Start up with `julia -p 8` (or whatever number of processors available).
-Then `include("parallel_score_all.jl")`
+Then `include("parallel_score_all.jl")`.
 """
 function parallel_score_all(scorer::Function, reps::Int = 1)
     NA = WordleSolver.NA
