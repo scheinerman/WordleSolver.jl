@@ -58,6 +58,18 @@ Always return `1`. This treats all guesses the same.
 equi_score(g::Int, possibles::Vector{Int}) = 1
 
 """
+    L2_score(g, possibles)
+Sum of `x^2` where `x` is a counter values returned by 
+`make_counts`.
+"""
+
+function L2_score(g::Int, possibles::Vector{Int})
+    c = make_counts(g, possibles)
+    return sum(x * x for x in values(c))
+end
+
+
+"""
     best_guess(possibles, score_func)
 Given a list of possible answers (given by `filter_answers`), return a best guess 
 based on minimizing `score_func`.
@@ -79,7 +91,8 @@ function best_guess(possibles::Vector{Int}, score_func::Function = min_max_score
     return best_g
 end
 
-export best_guess, min_max_score, entropy_score, equi_score
+
+export best_guess, min_max_score, entropy_score, equi_score, L2_score
 
 
 FIRST_GUESS = Dict{Function,Int}()
@@ -88,10 +101,11 @@ FIRST_GUESS = Dict{Function,Int}()
 FIRST_GUESS[min_max_score] = 1535
 FIRST_GUESS[equi_score] = 1
 FIRST_GUESS[entropy_score] = 10846
+FIRST_GUESS[L2_score] = 9958
 
 
 function make_first_guesses()
-    for f in [min_max_score, entropy_score, equi_score]
+    for f in [min_max_score, entropy_score, equi_score, L2_score]
         g = best_guess(collect(1:NA), f)
         FIRST_GUESS[f] = g
         guess = GUESS_LIST[g]

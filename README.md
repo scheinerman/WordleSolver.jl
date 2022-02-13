@@ -44,13 +44,14 @@ Success in 4 guesses!!
 ### Scoring Functions
 
 The `wordle_solver` function can be called with an optional argument that specifies a
-scoring function. There are three options:
+scoring function. There are the following options:
 * `min_max_score` (default)
 * `entropy_score` 
+* `L2_score`
 * `equi_score`
 
 These functions are used in the process of evaluating a best next guess given the 
-results thus far.
+results thus far. See **Algorithm** below for explanations.
 
 ## Automatic Play
 
@@ -108,3 +109,38 @@ Progress: 100%|█████████████████████�
 julia> sum(x)/length(x)
 3.5965442764578834
 ```
+
+## Algorithm
+
+Each guess is chosen based on the results of the previous guesses; we call
+those results the `history`. Let `A` be the set of possible solutions to the
+Wordle puzzle given the past `history`. The function `best_guess` returns
+a suggested next guess that minimizes a scoring function. 
+
+Given the `history` of past guesses and the resulting set of possible 
+solutions `A` that are consistent with the `history`, we score a guess `g`
+as follows:
+
+The guess `g` results in five-tuple of values, each of which is `0`, `1`, or `2`. 
+We calculate that list for all the possible words in `A`. We then count
+how many words in `A` gives the result `(0,0,0,0,0)`, or `(0,0,0,0,1)`, or 
+..., or `(2,2,2,2,2)`. This list of counts is fed into a scoring function 
+to be minimized. If there is more than one guess `g` that minimizes
+the scoring function, one of those possibilities is chosen at random.
+
+### Scoring functions
+Here is how those scoring functions work. Let `C` be the list of
+counts derived from a guess.
+
+* `min_max_score`:
+    This function simply returns the maximum value in `C`.
+
+* `entropy_score`:
+    This function returns the sum of `c*log(c)` over values `c` in `C`.
+
+* `L2_score`: 
+    This function resturns the sum of `c^2` over values `c` in `C`.
+
+* `equi_score`:
+    This function always returns `1`. Hence this is simply choosing a guess
+    at random.
