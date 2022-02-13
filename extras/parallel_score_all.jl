@@ -14,7 +14,7 @@ function parallel_score_all(scorer::Function, reps::Int = 1)
     NA = WordleSolver.NA
     total = 0
     for k = 1:reps
-        println("Round $k of $reps")
+        @info "Round $k of $reps"
         subtotal = @distributed (+) for a = 1:NA
             auto_play(a, scorer = scorer)
         end
