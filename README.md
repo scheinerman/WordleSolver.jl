@@ -110,6 +110,11 @@ julia> sum(x)/length(x)
 3.5965442764578834
 ```
 
+The `extras` directory contains a parallelized version called `parallel_score_all`.
+Invoke as `parallel_score_all(scorer, reps)` where `scorer` is the scoring function
+and `reps` is the number of times to try every possible word. The result is the
+average number of turns to solve a Wordle puzzle for the given scoring method. 
+
 ## Algorithm
 
 Each guess is chosen based on the results of the previous guesses; we call
