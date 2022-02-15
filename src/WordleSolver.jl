@@ -97,6 +97,8 @@ function wordle_solver(scorer::Function = min_max_score)
 
     bad_message = "\nYour entry is invalid. Please try again."
 
+    first_guess::Bool = true
+
     while true
         alist = filter_answers(history)
         if length(alist) == 0    # something wrong; no possible answer
@@ -114,8 +116,16 @@ function wordle_solver(scorer::Function = min_max_score)
             return
         end
 
+        
         shuffle!(alist)
-        g = best_guess(alist, scorer)
+        g = 1
+
+        if first_guess
+            g = FIRST_GUESS[scorer]
+            first_guess = false
+        else
+            g = best_guess(alist, scorer)
+        end
         guess = GUESS_LIST[g]
 
         # get user input
@@ -135,7 +145,7 @@ function wordle_solver(scorer::Function = min_max_score)
 
         history[g] = code_2_byte(result)
         if x == stop
-            steps = length(history) 
+            steps = length(history)
             println("\nSuccess in $steps guesses!!")
             return
         end
