@@ -260,6 +260,8 @@ end
 include("wordle_print.jl")
 include("auto_play.jl")
 
+include("solve_tools.jl")
+
 
 @info "Compilation completed"
 

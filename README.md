@@ -41,7 +41,38 @@ Enter the result --> 2,2,2,2,2
 Success in 4 guesses!!
 ```
 
-### Scoring Functions
+## Playing on the Wordle Website
+
+We provide tools for solving Wordle on the web. The computer will provide the user
+with guesses to try. The user is responsible for entering the five-tuple of integers
+based on the result observed on the website. The functions needed to do this are
+`new_history` and `record!`.
+
+To begin, the user types `h = new_history();` into the REPL. This creates a new
+history object `h` and gives a suggested guess to try.
+
+From this point on, the user records the result of the guess (using the five-integer
+encoding previously described) using the `record!` function with this syntax:
+`record(h, guess, result)`. 
+
+A typical session looks like this (to find the word "CLICK"):
+```
+julia> h = new_history();
+Suggest you try "RAISE"
+
+julia> record!(h, "RAISE", (0,0,2,0,0)) # scoring comes from the website
+"CLOUT"
+
+julia> record!(h, "CLOOT", (2,2,0,0,0))
+"FLANK"
+
+julia> record!(h, "FLANK", (0,2,0,0,2))
+"CLICK"
+```
+
+
+
+## Scoring Functions
 
 The `wordle_solver` function can be called with an optional argument that specifies a
 scoring function. There are the following options:
