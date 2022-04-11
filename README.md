@@ -109,6 +109,38 @@ TACIT
 
 The value returned by `auto_play` is the number of guesses.
 
+The function `all_play` solves the Wordle puzzle using all of the scoring methods.
+```
+julia> all_play("llama")
+
+Solving with min_max_score
+RAISE
+CLOAK
+APING
+LLAMA
+Solution in 4 steps
+
+Solving with entropy_score
+SOARE
+CLINK
+LLAMA
+Solution in 3 steps
+
+Solving with L2_score
+ROATE
+SLICK
+MENGS
+LLAMA
+Solution in 4 steps
+
+Solving with equi_score
+QUEYS
+ABACK
+DRAMA
+LLAMA
+Solution in 4 steps
+```
+
 ### Optional arguments
 
 `auto_play` can take two optional, named arguments:

@@ -78,3 +78,21 @@ function score_all(scorer::Function = min_max_score)
     end
     return result
 end
+
+export all_play
+
+scorer_list = [min_max_score, entropy_score, L2_score, equi_score]
+
+export all_play
+
+"""
+    all_play(word::String)
+Compare all solving methods to solve for the word.
+"""
+function all_play(answer::String)
+    for s in scorer_list
+        println("\nSolving with $s")
+        steps = auto_play(answer, scorer=s)
+        println("Solution in $steps steps")
+    end
+end
