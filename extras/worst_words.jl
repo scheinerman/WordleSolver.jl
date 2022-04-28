@@ -29,10 +29,45 @@ end
 
 """
     worst_words(scorer::Function=min_max_score, reps::Int=5)
-
 Find the words that scores the worst using scoring method `scorer`.
 """
 function worst_words(scorer::Function = min_max_score, reps::Int = 5)
     d = scorer_step_table(scorer, reps)
     return worst(d)
+end
+
+"""
+    make_all_tables(reps::Int = 10)
+Play all words `reps` times using all scoring methods. Return as a table of tables.
+"""
+function make_all_tables(reps::Int = 10)
+    fns = [min_max_score, entropy_score, L2_score, equi_score]
+    tables = Dict{Function, Dict{String, Float64}}()
+
+    for f in fns
+        @info "Playing all words $reps times using $f"
+        tables[f] = scorer_step_table(f, reps)
+    end
+
+    @info "Done"
+    return tables
+end
+
+
+
+function full_report(T::Dict{Function, Dict{String, Float64}})
+    @info "Most difficult words by method"
+
+    for f in keys(T)
+        ww = worst(f)
+        print(f,":\t")
+        for w ∈ ww
+            print(w," ")
+        end
+    end
+end
+
+function run(reps::Int=10)
+    T = make_all_tables(reps)
+    full_report(T)
 end
