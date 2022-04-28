@@ -1,3 +1,3 @@
 include(homedir() * "/.julia/dev/WordleSolver/extras/worst_words.jl")
-reps = 1
+reps = 10
 T = run(reps)
