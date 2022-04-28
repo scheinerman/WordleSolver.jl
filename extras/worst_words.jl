@@ -42,6 +42,9 @@ Play all words `reps` times using all scoring methods. Return as a table of tabl
 """
 function make_all_tables(reps::Int = 10)
     fns = [min_max_score, entropy_score, L2_score, equi_score]
+
+    fns = [equi_score]  ## DEBUG ##
+
     tables = Dict{Function, Dict{String, Float64}}()
 
     for f in fns
@@ -59,15 +62,20 @@ function full_report(T::Dict{Function, Dict{String, Float64}})
     @info "Most difficult words by method"
 
     for f in keys(T)
-        ww = worst(f)
+        d = T[f]
+        ww = worst(d)
         print(f,":\t")
         for w ∈ ww
             print(w," ")
         end
+        println()
+        println("Take about $(d[first(ww)]) steps")
+        println()
     end
 end
 
 function run(reps::Int=10)
     T = make_all_tables(reps)
     full_report(T)
+    return T
 end
